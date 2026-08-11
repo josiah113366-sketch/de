@@ -217,7 +217,7 @@ S3
 ```
                     DATA INGESTION
 
-                         Source
+                         Source <- 데이터 발생
                            │
         ┌──────────────────┼───────────────────┐────────────┐
         │                  │                   │            │
@@ -226,10 +226,10 @@ S3
  Ingestion             Ingestion           Ingestion     Ingestion
         │                  │                   │            │
         ▼                  ▼                   ▼            ▼
- CloudWatch        Kafka / Kinesis       DMS / Debezium  CSV/API/DB Export
+ CloudWatch      Kafka/MSK / Kinesis       DMS / Debezium  CSV/API/DB Export
  Firehose
         │                  │                   │            │
         └──────────────────┼───────────────────┘────────────┘
                            ▼
-                       S3 BRONZE
+                       S3 BRONZE <- raw 데이터 저장
 ```
