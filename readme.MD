@@ -113,13 +113,26 @@
                    CloudWatch Logs
                           │
                           ▼
-                 Amazon Data Firehose
+                 Amazon Data Firehose : 1분단위, 100MB단위등 기준으로 데이터를 모아서 전달
                           │
                           ▼
-                      S3 BRONZE
+                      S3 BRONZE     : 적제 위치 (메달리온 아킥텍처 기준 브론즈:원본데이터형태)
                   ─────────────────
                        Raw Log
                        Raw Event
                        JSON / GZIP
                        Partition
+```
+- s3 저장 샘플링
+```
+S3
+└─ bronze/
+   ├─ access/
+   │   └─ year=2026/month=08/day=11/
+   │
+   ├─ event/
+   │   └─ year=2026/month=08/day=11/
+   │
+   └─ error/
+       └─ year=2026/month=08/day=11/
 ```
