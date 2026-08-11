@@ -326,7 +326,7 @@ S3
                       │
                       ▼
               Pandas / Polars
-               Spark / Glue
+               Spark / Glue (etl, 데이터베이스, 테이블, 크롤러등 활용)
                       │
                   Transform
                       │
@@ -341,9 +341,29 @@ S3
 ```  
 
 
-
-
-
 - ELT Pipeline
+- 금융 프로젝트 활용, 저장후 SQL 변환 처리, 제조활용가능
 ```
+┌─────────────────────────────────────────────────────┐
+│                 05. ELT PIPELINE                    │
+└─────────────────────────────────────────────────────┘
+
+                 Data Source
+                      │
+                   Extract
+                      │
+                      ▼
+                     Load
+                      │
+                      ▼
+             S3 / Redshift
+                      │
+                      ▼
+                  SQL Transform
+                      │
+                      ▼
+              Silver / Gold
+                      │
+                      ▼
+             Analytics Mart
 ```
