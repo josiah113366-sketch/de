@@ -222,7 +222,7 @@ S3
         ┌──────────────────┼───────────────────┐────────────┐
         │                  │                   │            │
         ▼                  ▼                   ▼            ▼
- [V]Log / Event      [V]Streaming             CDC          Batch 
+ [V]Log / Event      [V]Streaming             CDC          [V]Batch 
  Ingestion             Ingestion           Ingestion     Ingestion
         │                  │                   │            │
         ▼                  ▼                   ▼            ▼
@@ -248,10 +248,37 @@ S3
                CloudWatch Logs
                       │
                       ▼
-             Amazon Data Firehose
+             Amazon Data Firehose : 시간 혹은 용량 단위 데이터를 묶어서 전송 -> 딜레이 발생
                       │
                       ▼
                  S3 BRONZE
                       │
                  Raw Data 저장
+```
+
+- Batch processing Ingestion pipeline
+  - 쌓여있는 데이터를 일정 주기로 처리 -> Airflow
+```
+┌─────────────────────────────────────────────────────┐
+│             02. BATCH DATA PIPELINE                 │
+└─────────────────────────────────────────────────────┘
+
+                 S3 BRONZE
+                      │
+                      ▼
+                   Airflow
+                      │
+          ┌───────────┼───────────┐
+          ▼           ▼           ▼
+       Pandas(소)  Polars(중)   Spark(대)
+          │           │           │
+          └───────────┼───────────┘
+                      ▼
+                 S3 SILVER
+                      │
+                      ▼
+                  S3 GOLD
+                      │
+                      ▼
+              Athena / Redshift
 ```
