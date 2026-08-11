@@ -312,4 +312,38 @@ S3
   [v]OpenSearch(ELK, EFK)  S3 Silver   Alert/Event
 ```
 
-- 
+- ETL Pipeline
+- Extact Treasfrom Load, 데이터 엔지니어의 전통적인 유형
+- 메달리온 아킥텍처 구조에서 사용 -> 각 레이어에서 데이터 형태 설명
+```
+┌─────────────────────────────────────────────────────┐
+│                 04. ETL PIPELINE                    │
+└─────────────────────────────────────────────────────┘
+
+             Source / S3 BRONZE
+                      │
+                  Extract
+                      │
+                      ▼
+              Pandas / Polars
+               Spark / Glue
+                      │
+                  Transform
+                      │
+                      ▼
+                   Load
+                      │
+                      ▼
+                 S3 SILVER
+                      │
+                      ▼
+                  S3 GOLD
+```  
+
+
+
+
+
+- ELT Pipeline
+```
+```
