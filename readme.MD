@@ -139,5 +139,74 @@ S3
 ```
 - 전체 구성 확장
 ```
+┌──────────────────────────────────────────────────────────────────────┐
+│                       LOG GENERATOR SYSTEM                           │
+└──────────────────────────────────────────────────────────────────────┘
 
+
+                     [ Traffic Generator ]
+
+                        ECS Fargate
+                             │
+                             ▼
+                            k6
+                             │
+                  HTTP / HTTPS Request
+                             │
+                             ▼
+                        Public ALB
+                             │
+                             ▼
+                       Dummy Service
+                         FastAPI
+                             │
+                 ┌───────────┼───────────┐
+                 │           │           │
+                 ▼           ▼           ▼
+              Access      Business     Error
+               Log         Event        Log
+                 │           │           │
+                 └───────────┼───────────┘
+                             │
+                             ▼
+                      CloudWatch Logs
+                             │
+                             ▼
+                    Amazon Data Firehose
+                             │
+                             ▼
+
+┌──────────────────────────────────────────────────────────────────────┐
+│                         DATA LAKE                                    │
+└──────────────────────────────────────────────────────────────────────┘
+
+                          S3 BRONZE
+                    ───────────────────
+
+                     Raw Access Log
+                     Raw Event Log
+                     Raw Error Log
+                     JSON / GZIP
+                     Date Partition
+
+                             │
+                             │
+                             ▼
+
+                    다음 Pipeline Chapter
+
+                             │
+              ┌──────────────┼───────────────┐
+              ▼              ▼               ▼
+           Airflow         Kafka          Kinesis
+           Batch         Streaming       Streaming
+              │
+              ▼
+       Pandas / Polars / Spark
+              │
+              ▼
+          S3 SILVER
+              │
+              ▼
+           S3 GOLD
 ```
