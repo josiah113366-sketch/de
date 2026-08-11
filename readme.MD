@@ -86,3 +86,40 @@
                             ▼
                            k6
 ```
+
+- 데이터 트레픽 => 적제 형태
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    LOG INGESTION                                 │
+└──────────────────────────────────────────────────────────────────┘
+
+                     HTTP Request
+                          │
+                          ▼
+                    Dummy Service
+                      FastAPI
+                          │
+                          │
+                   Log / Event 생성
+                          │
+          ┌───────────────┼────────────────┐
+          │               │                │
+          ▼               ▼                ▼
+      Access Log     Business Event     Error Log
+          │               │                │
+          └───────────────┼────────────────┘
+                          │
+                          ▼
+                   CloudWatch Logs
+                          │
+                          ▼
+                 Amazon Data Firehose
+                          │
+                          ▼
+                      S3 BRONZE
+                  ─────────────────
+                       Raw Log
+                       Raw Event
+                       JSON / GZIP
+                       Partition
+```
