@@ -198,8 +198,8 @@ S3
                              │
               ┌──────────────┼───────────────┐
               ▼              ▼               ▼
-           Airflow         Kafka          Kinesis
-           Batch         Streaming       Streaming
+           Airflow       Kafka/MSK        Kinesis
+           Batch         Streaming       Streaming -> Flink/spark streamming 으로 처리
               │
               ▼
        Pandas / Polars / Spark
