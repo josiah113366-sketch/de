@@ -343,19 +343,39 @@ S3
           - kafka, kinesis
      - 영구 보관
           - 데이터 레이크 -> s3 (객체 저장, 버킷단위로 관리, 검색지원)
-
+- 데이터 저장 형태 변화
+     - csv => json => parquet(분석용, 열단위) 유형
 ```
     Ingestion
         │
         ▼
     S3 BRONZE
 ───────────────
-  Raw JSON => *.json
-  Raw CSV
+  Raw JSON => *.json, *.json.gz
+  Raw CSV  => *.csv
   Raw Event
   Raw Log
   CDC Data
+----------------- => *.parquet
 ```
+- 파일 포멧 형태 및 사용용도 표
+
+| 분류            | 대표 확장자                                    | 주요 용도                   |
+| ------------- | ----------------------------------------- | ----------------------- |
+| **정형 데이터**    | `.csv`, `.tsv`, `.xlsx`                   | 매출, 고객, 주문 등 테이블 데이터    |
+| **반정형 데이터**   | `.json`, `.jsonl`, `.xml`, `.yaml`        | API 응답, 이벤트, 로그         |
+| **분석용 컬럼 포맷** | `.parquet`, `.orc`                        | Athena, Spark, Glue 분석  |
+| **빅데이터 포맷**   | `.avro`                                   | Kafka, Spark, 데이터 파이프라인 |
+| **로그 파일**     | `.log`, `.txt`, `.json`, `.json.gz`       | 웹/API/애플리케이션 로그         |
+| **압축 파일**     | `.gz`, `.zip`, `.tar.gz`, `.bz2`          | 저장 공간/전송량 절감            |
+| **이미지**       | `.jpg`, `.png`, `.webp`, `.gif`, `.svg`   | 상품 이미지, ML 데이터          |
+| **영상**        | `.mp4`, `.mov`, `.avi`, `.mkv`            | CCTV, 콘텐츠, ML 데이터       |
+| **오디오**       | `.mp3`, `.wav`, `.flac`                   | 음성 데이터, AI 학습           |
+| **문서**        | `.pdf`, `.docx`, `.pptx`, `.hwp`          | 문서 보관                   |
+| **DB 백업**     | `.sql`, `.dump`, `.bak`                   | 데이터베이스 백업               |
+| **ML/AI 모델**  | `.pkl`, `.joblib`, `.pt`, `.pth`, `.onnx` | 모델 아티팩트                 |
+| **웹 파일**      | `.html`, `.css`, `.js`                    | 정적 웹사이트                 |
+| **바이너리**      | `.bin`, `.dat` 등                          | 기타 애플리케이션 데이터           |
 
 
 
