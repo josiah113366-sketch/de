@@ -516,7 +516,7 @@ Load                Transform
   │   Raw Data    │
   └───────┬───────┘
           │
-      Processing
+      Processing -> 데이터 정제, 전처리, 파생변수 등등 
           │
           ▼
   ┌───────────────┐
@@ -524,11 +524,11 @@ Load                Transform
   │ Clean / Valid │
   └───────┬───────┘
           │
-    Business Logic
+    Business Logic -> 데이터의 최종 목표에 따라 가공
           │
           ▼
   ┌───────────────┐
   │     GOLD      │
-  │ Analytics     │
+  │ Analytics     │ -> 최종 데이터 형태
   └───────────────┘
 ```
