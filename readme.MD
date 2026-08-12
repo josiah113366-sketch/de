@@ -501,3 +501,34 @@ Load                Transform
                       ▼
              Analytics Mart
 ```
+
+
+# DATA MODELING / 아킥텍처
+- 데이터를 어떻게 계층화 관리 
+- 메달리온 아킥텍처 하나의 대안으로 제시 -> 적용/적용 x
+- DATA PROCESSING의 결과를 관리하는 아킥텍처
+```
+  MEDALLION ARCHITECTURE
+
+
+  ┌───────────────┐
+  │    BRONZE     │
+  │   Raw Data    │
+  └───────┬───────┘
+          │
+      Processing
+          │
+          ▼
+  ┌───────────────┐
+  │    SILVER     │
+  │ Clean / Valid │
+  └───────┬───────┘
+          │
+    Business Logic
+          │
+          ▼
+  ┌───────────────┐
+  │     GOLD      │
+  │ Analytics     │
+  └───────────────┘
+```
