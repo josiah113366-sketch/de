@@ -412,16 +412,23 @@ S3
 
                        S3 BRONZE
                            │
-             ┌─────────────┴─────────────┐
-             │                           │
-             ▼                           ▼
-       Batch Processing           Stream Processing
-             │                           │
-             ▼                           ▼
-          Airflow                  Spark Streaming
-             │                        / Flink
+             ┌─────────────┴───────────────┐
+             │                             │
+             ▼                             ▼
+       Batch Processing              Stream Processing
+             │                             │
+             ▼                             ▼
+[V]Airflow/MWAA                   Spark Streaming
+/[V]Step Functions + Lambda            / [V]Flink => 데이터 처리
+             │             
              ▼
-   Pandas / Polars / Spark
+   Pandas / Polars / Spark => 데이터 처리
+
+     - Airflow 내부에서 DAG를 구성하고, DAG 내에서 Pandas/Polars/pySpark등을 활용하여 TASK 작성 -> 처리
+          - EC2등 서버 구축 -> 평시 비용 발생함 or 인프라 외부(로컬 구성) -> 보안 이슈 발생!!
+          - MWAA
+     - Step Functions 에서 Lambda를 구성하고 Lambda 내부에서 Pandas/Polars/pySpark등을 활용 TASK 작성 -> 처리 
+          - 서버리스, 사용할때만 비용 발생
 ```
 
 
