@@ -16,9 +16,17 @@ def _extract_cb(**kwargs):
         - context : airflow가 주입한 정보(task 정보, 시간, ... 메타 정보). task 전달 데이터
     '''
     # 1. 컨텍스트(airflow 내부에 정보 저장 공간)에서 특정 정보 추출, 키는 정의되어 있음
+    # ti : <TaskInstance: 02_basics_bash.extract_task scheduled__2026-06-29T00:00:00+00:00 [running]>
     ti = kwargs['ti']
+    ds = kwargs['ds']
+    ds_nodash = kwargs['ds_nodash']
+    run_id = kwargs['run_id']
+
     logging.info("=== Extract 작업 ===")
     logging.info(f"ti = {ti}")
+    logging.info(f"ds = {ds}")
+    logging.info(f"ds_nodash = {ds_nodash}")
+    logging.info(f"run_id = {run_id}")
 
     pass
 def _transform_cb(**kwargs):
