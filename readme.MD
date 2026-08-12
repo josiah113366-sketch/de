@@ -431,6 +431,22 @@ S3
           - 서버리스, 사용할때만 비용 발생
 ```
 
+- 프로세싱 전략(strategy) : ETL, ELT
+```
+  Processing Strategy
+
+┌─────────┴─────────┐
+│                   │
+▼                   ▼
+ETL                 ELT
+
+Extract             Extract
+  ↓                   ↓
+Transform             Load
+  ↓                   ↓
+Load                Transform
+```
+
 
 
 
