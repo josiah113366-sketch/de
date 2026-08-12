@@ -37,6 +37,20 @@ def _extract_cb(**kwargs):
     # XCOM을 통해서 특정 데이터를 push하는 행위 -> 반환 행위 (return)
     return f"ds = {ds} ds_nodash = {ds_nodash} run_id = {run_id}"
 def _transform_cb(**kwargs):
+    '''
+    - kwargs을 통해서 다른 task가 XCOM으로 전달한 데이터(순서상 건너뛰어도 관계 없음)
+        - airflow context 정보 획득 -> "ti" -> 전달된 데이터 접근(획득)
+    '''
+    # 1. ti 객체 획득
+    ti = kwargs["ti"]
+
+    # 2. XCOM을 통해서 데이터 획득
+    #   "extract_task"라는 id를 가진 Task의 게시물을 가져온다. 
+    data = ti.xcom_pull(task_ids="extract_task")
+
+    # 3. 데이터 확인
+    logging.info("=== transform ===")
+    logging.info(f"data = {data}")
     pass
 
 # 2. DAG 정의 
