@@ -36,6 +36,10 @@
 
 # DATA GENERATION 
 - 데이터가 어디서 발생하는가? 
+  - 목표
+     - 데이터를 더미로 발생(클라이언트->서비스->생성된데이터:가정) -> 바로 데이터 레이크(s3) 적제
+          - 데이터 : 정상, 비정상(비율 적절하게 구성)
+     - 이를 위해서 파이썬 구성(로컬), aws ecs + fargate로 구성
   - 도메인결정 -> 실제 데이터 샘플 획득, 불량률 획득 -> 구성 (프로젝트)
   - 형태
     - [v]최종 형태를 더미로 구성하여 적제
@@ -217,7 +221,7 @@ S3
 ```
                     DATA INGESTION
 
-                         Source <- 데이터 발생
+                         Source <- 데이터 발생 (raw data, 원본) -> 초/분당 얼마나 발생 하는 컨셉!!
                            │
         ┌──────────────────┼───────────────────┐────────────┐
         │                  │                   │            │
@@ -226,12 +230,12 @@ S3
  Ingestion             Ingestion           Ingestion     Ingestion
         │                  │                   │            │
         ▼                  ▼                   ▼            ▼
- CloudWatch      Kafka/MSK / Kinesis       DMS / Debezium  CSV/API/DB Export
+ CloudWatch      Kafka/MSK / Kinesis       DMS / Debezium  CSV/API/DB Export (airflow/MWAA)
  Firehose
         │                  │                   │            │
         └──────────────────┼───────────────────┘────────────┘
                            ▼
-                       S3 BRONZE <- raw 데이터 저장
+                       S3(데이터 레이크) BRONZE <- raw 데이터 저장 
 ```
 
 - Log / Event Ingestion Pipeline
@@ -248,7 +252,7 @@ S3
                CloudWatch Logs
                       │
                       ▼
-             Amazon Data Firehose : 시간 혹은 용량 단위 데이터를 묶어서 전송 -> 딜레이 발생
+             Amazon Data `Firehose` : 시간 혹은 용량 단위 데이터를 묶어서 전송 -> 딜레이 발생
                       │
                       ▼
                  S3 BRONZE
@@ -258,15 +262,22 @@ S3
 
 - Batch processing Ingestion pipeline
   - 쌓여있는 데이터를 일정 주기로 처리 -> Airflow
+  - airflow/MWAA <-> Step Functions + lambda : 서버리스(비용저렴)
+  - 스케줄링 (하루에 한번, 매일 12시에, ....)
 ```
 ┌─────────────────────────────────────────────────────┐
 │             02. BATCH DATA PIPELINE                 │
 └─────────────────────────────────────────────────────┘
 
+                 로그제너레이터
+                      │
+                  `Airflow` : 스케줄 작성 -> DAG 작성 -> 데이터 전처리
+                      │
+                      ▼
                  S3 BRONZE
                       │
                       ▼
-                   Airflow : 스케줄 작성 -> DAG 작성 -> 데이터 전처리
+                  `Airflow` : 스케줄 작성 -> DAG 작성 -> 데이터 전처리
                       │
           ┌───────────┼───────────┐
           ▼           ▼           ▼
@@ -287,6 +298,8 @@ S3
 - Real-time Streamming Pipeline
 - 데이터가 들어오는 동시에 즉시 처리
 - 공장 설비/생산시 이상 탐지(감지), 금융 이상 거래 감지, 게임, 실시간 주문량, ...
+- Kafka/MSK, Kinesis, (E`L`K, E`F`K, openseach:참고) => 전송
+- Flink : 실시간 데이터를 실시간 가공(전처리)
 ```
 ┌─────────────────────────────────────────────────────┐
 │          03. REAL-TIME STREAMING PIPELINE           │
