@@ -595,3 +595,70 @@ Grafana
 OpenSearch Dashboards / 키바나의 aws 버전
 Airflow UI
 ```
+
+# 최종 카테고리
+- 키워드만 정리
+```
+DATA ENGINEERING
+
+1. Data Generation
+   └─ 로그제너레이터
+
+
+2. Data Ingestion
+   ├─ Log / Event Ingestion
+   │    CloudWatch → Firehose
+   │
+   ├─ Streaming Ingestion
+   │    Kafka / Kinesis
+   │
+   ├─ Batch Ingestion
+   │    File / API / DB Export
+   │
+   └─ CDC Ingestion
+        DMS / Debezium
+
+
+3. Data Storage
+   ├─ S3
+   ├─ Data Lake
+   └─ Bronze
+
+
+4. Data Processing
+   ├─ Batch Processing
+   │    Airflow + Pandas/Polars/Spark
+   │
+   ├─ Stream Processing
+   │    Flink / Spark Streaming
+   │
+   ├─ ETL
+   └─ ELT
+
+
+5. Data Modeling
+   └─ Medallion
+        Bronze
+          ↓
+        Silver
+          ↓
+         Gold
+
+
+6. Data Serving
+   ├─ Athena
+   ├─ Redshift
+   ├─ OpenSearch
+   └─ QuickSight
+
+
+7. Orchestration
+   └─ Airflow
+
+
+8. Observability
+   ├─ CloudWatch
+   ├─ Prometheus
+   ├─ Grafana
+   └─ OpenSearch Dashboard
+```
