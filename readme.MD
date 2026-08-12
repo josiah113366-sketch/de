@@ -557,7 +557,7 @@ SQL(질의)  Data Mart(분석)    Search(검색)
 
 # Orchestration
 - 전체 파이프라인 컨트롤(통제)
-- Pipeline Control plane : Airflow/MWAA or Step Functions
+- Pipeline Control plane : Airflow/MWAA or Step Functions -> 스케줄링, 반복, 전반위 컨트롤
 - 메달리온 아킥텍처 관점 적용
 ```
                   ORCHESTRATION
