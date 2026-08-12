@@ -404,7 +404,25 @@ S3
         └── *.parquet
 ```
 
+# DATA PROCESSING
+- 쌓은 데이터를 어떻게 처리할 것인가?
+- 배치/스트리밍 방식
+```
+                    DATA PROCESSING
 
+                       S3 BRONZE
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+             ▼                           ▼
+       Batch Processing           Stream Processing
+             │                           │
+             ▼                           ▼
+          Airflow                  Spark Streaming
+             │                        / Flink
+             ▼
+   Pandas / Polars / Spark
+```
 
 
 
