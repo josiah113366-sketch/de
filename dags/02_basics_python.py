@@ -4,6 +4,10 @@
 - 공간의 한계 -> 공유 데이터는 raw 데이터가 아닌 raw 데이터에 접근 가능한 정보/작은 규모 raw 가능
 '''
 # 1. 모듈 가져오기
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+import logging # 레벨별 로그 출력 (에러, 경고, 정보, 디버깅, ...)
 
 # 2. DAG 정의 
 
