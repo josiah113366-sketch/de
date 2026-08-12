@@ -432,6 +432,9 @@ S3
 ```
 
 - 프로세싱 전략(strategy) : ETL, ELT
+     - 적절하게 데이터 파이프라인내에 사용
+     - ETL : 전통적인 사용법
+     - ELT : 새롭게 등장해서 확산중
 ```
   Processing Strategy
 
@@ -446,94 +449,29 @@ Transform             Load
   ↓                   ↓
 Load                Transform
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - ETL Pipeline
-- Extact Treasfrom Load, 데이터 엔지니어의 전통적인 유형
-- 메달리온 아킥텍처 구조에서 사용 -> 각 레이어에서 데이터 형태 설명
+     - Extact Treasfrom Load, 데이터 엔지니어의 전통적인 유형
+     - 메달리온 아킥텍처 구조에서 사용 -> 각 레이어에서 데이터 형태 설명
 ```
 ┌─────────────────────────────────────────────────────┐
 │                 04. ETL PIPELINE                    │
 └─────────────────────────────────────────────────────┘
 
-             Source / S3 BRONZE
-                      │
-                  Extract
-                      │
-                      ▼
-              Pandas / Polars
-               Spark / Glue (etl, 데이터베이스, 테이블, 크롤러등 활용)
-                      │
-                  Transform
-                      │
-                      ▼
-                   Load
-                      │
-                      ▼
-                 S3 SILVER
-                      │
-                      ▼
-                  S3 GOLD
+     Source / S3 BRONZE Layer
+               │
+          Extract    <-Pandas / Polars / Spark / Glue (etl, 데이터베이스, 테이블, 크롤러등 활용)
+               │
+               ▼
+          Transform  <- Pandas / Polars / Spark / Glue (etl, 데이터베이스, 테이블, 크롤러등 활용)
+               │
+               ▼
+          Load       <- Pandas / Polars / Spark / Glue (etl, 데이터베이스, 테이블, 크롤러등 활용)
+               │
+               ▼
+          S3 SILVER Layer
+               │
+               ▼
+          S3 GOLD
 ```  
 
 
