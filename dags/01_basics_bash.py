@@ -44,9 +44,22 @@ with DAG(
     # 기본 설정에서 소급 X, 오늘 기준으로 8월 13일 00시 00분 00초에 작동
     tags = ['bash', 'basic'] # DAG 검색(특정)을 위해서 자유롭게 세팅
 ) as dag:
-
     # 3. Operator 정의 
+    t1 = BashOperator(
+        task_id      = "date-print", # 영문자, 숫자, 하이픈, 마침표, 언더바
+        bash_command = "date"
+    ) # task 정의됨 
+    t2 = BashOperator(
+        task_id      = "sleep",
+        bash_command = "sleep 5"
+    )
+    t3 = BashOperator(
+        task_id      = "echo-print",
+        bash_command = 'echo "hello airflow task"'
+    )
 
     # 4. 의존성 정의, 구동 순서 정의
+    # t1 실행 -> t2 실행 -> t3 실행, 성공이 전제
+    t1 >> t2 >> t3
 
     pass
