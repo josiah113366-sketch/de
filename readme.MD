@@ -8,15 +8,15 @@
    데이터 발생
         │
         ▼
-2. DATA INGESTION   : firehose > kinesis/kafka, .. 서비스
+2. DATA INGESTION   : firehose > kinesis/kafka, E`L`K, E`F`K.. 서비스 
    데이터 수집 / 유입
         │
         ▼
-3. DATA STORAGE     : s3 (데이터 레이크)등...
+3. DATA STORAGE     : s3 (데이터 레이크)등... -> s3(최종/중간/최초 목적지(데이터 레이크)), db
    원본 저장
         │
         ▼
-4. DATA PROCESSING : ETL,ELT, 메달리온아킥텍처(브론즈,실버,골드), pandas/polars/spark,s3(중간 저장)
+4. DATA PROCESSING : ETL,ELT, 메달리온아킥텍처(브론즈,실버,골드), pandas/polars/spark->Transform/Exteract,s3(중간 저장)
    정제 / 변환 / 집계
         │
         ▼
@@ -30,7 +30,7 @@
 ────────────────────────────────────────────────────────────
 전체 과정에 걸쳐
 
-7. Orchestration : 오케스트레이션 , airflow(배치 프로세싱)
+7. Orchestration : 오케스트레이션 , airflow(배치 프로세싱) => 데이터 파이프라인 구축(도메인에 따라 구성 상이)
 8. Observability : 그라파나/프로메테우스/ ELK에서는 키바나, opensearh 대시보드등 제품 활용
 ```
 
