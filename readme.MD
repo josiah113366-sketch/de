@@ -542,14 +542,14 @@ Load                Transform
                   │
   ┌───────────────┼────────────────┐
   ▼               ▼                ▼
-Athena        Redshift        OpenSearch
+Athena(서버리스) Redshift     OpenSearch(엘라스틱서치(검색엔진의 오픈소스버전))
   │               │                │
   ▼               ▼                ▼
-SQL          Data Mart          Search
+SQL(질의)  Data Mart(분석)    Search(검색)
   │               │                │
   └───────────────┼────────────────┘
                   ▼
-              QuickSight
-              Dashboard
-              Application
+              QuickSight -> AI 연결 -> RAG -> 서비스
+              Dashboard -> 관제, 모니터링,...
+              Application -> 앱/웹,...
 ```
