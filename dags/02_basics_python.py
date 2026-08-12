@@ -9,6 +9,12 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import logging # 레벨별 로그 출력 (에러, 경고, 정보, 디버깅, ...)
 
+# 2-1. 콜백 함수 정의
+def _extract_cb(**kwargs):
+    pass
+def _transform_cb(**kwargs):
+    pass
+
 # 2. DAG 정의 
 with DAG(
     dag_id      = "02_basics_bash",  
@@ -25,8 +31,14 @@ with DAG(
 ) as dag:
     # `ET`L
     # 3. Operator 정의
-    extract_task = PythonOperator()
-    transform_task = PythonOperator()
+    extract_task = PythonOperator(
+        task_id      = "extract_task",
+        python_callable = _extract_cb # 콜백 함수 (실제 처리하는 업무 정의한 함수, 내부(_)에서만 사용)
+    )
+    transform_task = PythonOperator(
+        task_id      = "transform_task",
+        python_callable = _transform_cb
+    )
 
     # 4. 의존성 정의
     extract_task >> transform_task
