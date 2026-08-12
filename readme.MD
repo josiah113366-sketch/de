@@ -532,3 +532,24 @@ Load                Transform
   │ Analytics     │ -> 최종 데이터 형태
   └───────────────┘
 ```
+
+# DATA SERVING
+- 최종 데이터(골드 레이어)를 어떻게 제공/사용
+```
+            DATA SERVING
+
+                S3 GOLD
+                  │
+  ┌───────────────┼────────────────┐
+  ▼               ▼                ▼
+Athena        Redshift        OpenSearch
+  │               │                │
+  ▼               ▼                ▼
+SQL          Data Mart          Search
+  │               │                │
+  └───────────────┼────────────────┘
+                  ▼
+              QuickSight
+              Dashboard
+              Application
+```
