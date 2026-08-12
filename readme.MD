@@ -602,7 +602,7 @@ Airflow UI
 DATA ENGINEERING
 
 1. Data Generation
-   └─ 로그제너레이터
+   └─ 로그제너레이터, faker, ecr + fargate
 
 
 2. Data Ingestion
@@ -613,10 +613,12 @@ DATA ENGINEERING
    │    Kafka / Kinesis
    │
    ├─ Batch Ingestion
-   │    File / API / DB Export
+   │    File / API / DB Export / Airflow
    │
    └─ CDC Ingestion
         DMS / Debezium
+   
+   └─ E`L`K/E`F`K
 
 
 3. Data Storage
@@ -648,12 +650,12 @@ DATA ENGINEERING
 6. Data Serving
    ├─ Athena
    ├─ Redshift
-   ├─ OpenSearch
+   ├─ OpenSearch/`E`LK/`E`FK
    └─ QuickSight
 
 
 7. Orchestration
-   └─ Airflow
+   └─ Airflow / Step Functions
 
 
 8. Observability
