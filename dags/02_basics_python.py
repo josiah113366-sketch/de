@@ -10,6 +10,19 @@ from datetime import datetime, timedelta
 import logging # 레벨별 로그 출력 (에러, 경고, 정보, 디버깅, ...)
 
 # 2. DAG 정의 
+with DAG(
+    dag_id      = "02_basics_bash",  
+    description = "파이썬 task, XCOM 사용",  
+    default_args = {
+            "owner"           : "aic-de1-admin",     
+            "retries"         : 1,                   
+            "retry_delay"     : timedelta(minutes=5) 
+    }, 
+    schedule_interval = "@once",  # 수동으로 한 번 수행, 주기성 X
+    start_date = datetime(2026,6,29), 
+    catchup = False, 
+    tags = ['python', 'xcom'] 
+) as dag:
 
 # 3. Operator 정의
 
