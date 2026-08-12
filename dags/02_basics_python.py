@@ -11,6 +11,15 @@ import logging # 레벨별 로그 출력 (에러, 경고, 정보, 디버깅, ...
 
 # 2-1. 콜백 함수 정의
 def _extract_cb(**kwargs):
+    '''
+    - kwargs : airflow가 작업하기 전에 내부 정보(context)를 접근할 수 있는 내용 엔트리 포인트
+        - context : airflow가 주입한 정보(task 정보, 시간, ... 메타 정보). task 전달 데이터
+    '''
+    # 1. 컨텍스트(airflow 내부에 정보 저장 공간)에서 특정 정보 추출, 키는 정의되어 있음
+    ti = kwargs['ti']
+    logging.info("=== Extract 작업 ===")
+    logging.info(f"ti = {ti}")
+
     pass
 def _transform_cb(**kwargs):
     pass
