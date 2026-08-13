@@ -30,7 +30,7 @@ with DAG(
     # 매일 오전 9시 00분에 스케줄 작동
     schedule_interval = "0 9 * * *",  # cron 방식으로 표기 (분, 시, 일, 월, 주)
     # 수행 시작 시간 서울 시간대 타임존 조정
-    start_date = pendulum.datetime(2026,6,29, tz = "KST"), 
+    start_date = pendulum.datetime(2026,6,29, tz = KST), 
     catchup = False, 
     tags = ['macro', 'context', 'jinja'] 
 ) as dag:
@@ -42,7 +42,7 @@ with DAG(
     t1 = BashOperator(
         task_id      = "jinja_macro_task",
         # macro를 통해서 준비된 함수 활용
-        bash_command = "echo 'DAG의 t1 task 일주일 전 수행 시간(임시) {{ macro.ds_add(ds, -7) }}, 랜덤 {{ macro.random() }}' "
+        bash_command = "echo 'DAG의 t1 task 일주일 전 수행 시간(임시) {{ macros.ds_add(ds, -7) }}, 랜덤 {{ macros.random() }}' "
     )
     t1 = PythonOperator(
         task_id      = "jinja_python_task",
@@ -50,3 +50,4 @@ with DAG(
     )
 
     # 5. 의존성
+    t1 >> t2 >> t3

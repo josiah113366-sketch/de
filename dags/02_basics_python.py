@@ -78,7 +78,7 @@ with DAG(
     start_date = pendulum.datetime(
         # 수행 시작 시간 서울 시간대 타임존 조정
         2026,6,29, 
-        tz = "KST"
+        tz = KST
     ), # datetime(2026,6,29), 
     catchup = False, 
     tags = ['python', 'xcom'] 
