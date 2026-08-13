@@ -63,7 +63,11 @@ with DAG(
         task_id = "skip"
     )
     task_end     = EmptyOperator(
-        task_id = "end"
+        task_id = "end", 
+        # 분기 처리를 수행 -> 진행되지 않은 task가 존재 -> 성공/엔딩의 기준을 설정해야 함. 
+        # task 전체 수행에 대한 조건 부여
+        # 실패 x, 최소 1개는 성공해야 함. -> 완료
+        trigger_rule= TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
     )
 
     # 5. 의존성(수행 순서), 시나리오별 준비 (사전 요구 사항에 의해 결정)
