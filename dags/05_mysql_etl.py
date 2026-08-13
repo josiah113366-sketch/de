@@ -117,7 +117,7 @@ def _load(**kwargs):
                 # 4. 쿼리 실행
                 cursor.executemany(sql, params ) # n개 데이터 한 번에 넣기
                 # 5. 커밋
-                conn.commit()
+                conn.commit
                 pass
     except Exception as e:
         logging.error(f'sql 에러 {e}')
