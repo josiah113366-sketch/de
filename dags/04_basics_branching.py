@@ -17,6 +17,20 @@ import random
 KST = pendulum.timezone("Asia/Seoul")
 
 # 4-1. 콜백 함수
+def _branch_cb(**kwargs):
+    '''
+        분기 처리 -> 특정 task로 다음 수행 지정 -> task_id 값을 반환
+    '''
+    if random.choice([True, False]):
+        logging.info("task process 분기")    
+        return "process" # 다음에 수행할 task_id 값을 반환
+    else: 
+        logging.info("task skip 분기")
+        return "skip"
+    pass
+def _process_cb(**kwargs):
+    logging.info("task process 수행")
+    pass
 
 # 3. DAG 
 with DAG(
