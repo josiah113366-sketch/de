@@ -28,7 +28,9 @@ def _extract_cb(**kwargs):
     # 시간 보정
     logical_date = kwargs["logical_date"]
     logical_date_kst = logical_date.in_timezone(KST)
-    
+    # 차후 S3등에 적재할 때 파티션 시 활용함 yyyy, mm, dd 끊어서 사용 시 활용
+    ds_kst           = logical_date_kst.format("YYYY-MM-DD")
+    ds_nodash_kst    = logical_date_kst.format("YYYYMMDD")
 
     logging.info("=== Extract 작업 ===")
     logging.info(f"ti = {ti}")
@@ -39,6 +41,8 @@ def _extract_cb(**kwargs):
     '''
     logging.info(f"ds = {ds}")
     logging.info(f"ds_nodash = {ds_nodash}")
+    logging.info(f"ds = {ds_kst}")
+    logging.info(f"ds_nodash = {ds_nodash_kst}")
     logging.info(f"run_id = {run_id}")
 
     # 정보 전달 -> XCOM 게시판에 본 task가 글을 작성하는 것
