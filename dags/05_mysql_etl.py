@@ -99,9 +99,15 @@ def _load(**kwargs):
     # conn = hooks.get_conn()
     try:
         with hooks.get_conn() as conn:
+            logging.info(f'커넥션 획득 완료')
             pass
     except Exception as e:
         logging.error(f'sql 에러 {e}')
+    else:
+        logging.info(f'데이터베이스 처리 정상')
+    finally:
+        logging.info(f'데이터베이스 작업 완료')
+        pass
     pass
 
 # DAG 정의 
