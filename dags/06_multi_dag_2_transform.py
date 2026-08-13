@@ -20,9 +20,9 @@ os.makedirs(DATA_PATH, exist_ok=True)
 # 콜백 함수 
 # _extract는 파일 나눴을 때 그대로 사용함
 def _transform(**kwargs):
-    # 1. _extract가 전달한 내용 XCOM을 통해서 획득
-    ti             = kwargs["ti"]
-    json_file_path = ti.xcom_pull(task_ids="extract")
+    # 1. 다른 DAG에서 전달한 내용을 가져온다 
+    dag_run             = kwargs["dag_run"]
+    json_file_path      = dag_run.conf.get('json_path')
     logging.info(f'전달한 데이터 파일 경로 {json_file_path}')
 
     # 2. transform -> 데이터 clean, 전처리(단위 변경, 파생 변수, ...)
