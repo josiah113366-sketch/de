@@ -12,6 +12,10 @@ import pendulum
 # 2. 전역 변수
 KST = pendulum.timezone("Asia/Seoul")
 
+# 4-1. 콜백 함수
+def _print(**kwargs):
+    pass
+
 # 3. DAG 
 with DAG(
     dag_id      = "03_basics_context_jinja",  
@@ -28,20 +32,18 @@ with DAG(
     catchup = False, 
     tags = ['macro', 'context', 'jinja'] 
 ) as dag:
-    # `ET`L
-    # 3. Operator 정의
-    extract_task = PythonOperator(
-        task_id      = "extract_task",
-        python_callable = _extract_cb # 콜백 함수 (실제 처리하는 업무 정의한 함수, 내부(_)에서만 사용)
+    # 4. 오퍼레이터를 이용하여 task를 정의
+    t1 = BashOperator(
+        task_id      = "jinja_used_task",
+        bash_command = ""
     )
-    transform_task = PythonOperator(
-        task_id      = "transform_task",
-        python_callable = _transform_cb
+    t1 = BashOperator(
+        task_id      = "jinja_macro_task",
+        bash_command = ""
     )
-
-    # 4. 의존성 정의
-    extract_task >> transform_task
-
-    # 4. 오퍼레이터
+    t1 = PythonOperator(
+        task_id      = "jinja_python_task",
+        python_callable = _print
+    )
 
     # 5. 의존성
