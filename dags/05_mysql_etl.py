@@ -64,6 +64,17 @@ def _transform(**kwargs):
     json_file_path = ti.xcom_pull(task_ids="extract")
     logging.info(f'전달한 데이터 파일 경로 {json_file_path}')
 
+    # 2. transform -> 데이터 clean, 전처리(단위 변경, 파생 변수, ...)
+    #    섭씨 온도를 화씨 온도로 계산 -> 파생 변수 추가 -> pandas의 DataFrame 활용
+    #    섭씨 온도 100도 이하(<=)만 센서가 정상, 그 이상은 이상 탐지의 대상으로 간주 -> 이상치 제거(컨셉)
+    # 2-1. json file -> load -> DataFrame
+    df = pd.read_json(json_file_path)
+    # 2-2. 이상치 제거(컨셉) -> clean 작업의 범주, 100도 이하만(조건->불린) 추출(인덱싱): 불린 인덱싱
+    target_df= df[df['temperature'] <= 100].copy()
+    # 2-3. 파생 변수 생성 -> 섭씨 -> 화씨 
+    # °F = (°C × 9/5) + 32
+    target_df["temperature_f"] = (target_df['temperature'] * 9/5) + 32
+
     pass
 
 def _load(**kwargs):
