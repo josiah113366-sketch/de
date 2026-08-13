@@ -9,7 +9,11 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import logging # 레벨별 로그 출력 (에러, 경고, 정보, 디버깅, ...)
 
-# 2-1. 콜백 함수 정의
+# KST (한국 시간대 전체 조정)
+import pendulum
+KST = pendulum.timezone("Asia/Seoul")
+
+# 3-1. 콜백 함수 정의 -> 실제 task 작업 상세 내용
 def _extract_cb(**kwargs):
     '''
     - kwargs : airflow가 작업하기 전에 내부 정보(context)를 접근할 수 있는 내용 엔트리 포인트
@@ -21,6 +25,10 @@ def _extract_cb(**kwargs):
     ds = kwargs['ds']
     ds_nodash = kwargs['ds_nodash']
     run_id = kwargs['run_id']
+    # 시간 보정
+    logical_date = kwargs["logical_date"]
+    logical_date_kst = logical_date.in_timezone(KST)
+    
 
     logging.info("=== Extract 작업 ===")
     logging.info(f"ti = {ti}")
@@ -63,7 +71,11 @@ with DAG(
             "retry_delay"     : timedelta(minutes=5) 
     }, 
     schedule_interval = "@once",  # 수동으로 한 번 수행, 주기성 X
-    start_date = datetime(2026,6,29), 
+    start_date = pendulum.datetime(
+        # 수행 시작 시간 서울 시간대 타임존 조정
+        2026,6,29, 
+        tz = "KST"
+    ), # datetime(2026,6,29), 
     catchup = False, 
     tags = ['python', 'xcom'] 
 ) as dag:
