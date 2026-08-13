@@ -39,12 +39,12 @@ with DAG(
         task_id      = "jinja_used_task",
         bash_command = "echo 'DAG의 t1 task 수행 시간 {{ ds }}, {{ ti }}' "
     )
-    t1 = BashOperator(
+    t2 = BashOperator(
         task_id      = "jinja_macro_task",
         # macro를 통해서 준비된 함수 활용
         bash_command = "echo 'DAG의 t1 task 일주일 전 수행 시간(임시) {{ macros.ds_add(ds, -7) }}, 랜덤 {{ macros.random() }}' "
     )
-    t1 = PythonOperator(
+    t3 = PythonOperator(
         task_id      = "jinja_python_task",
         python_callable = _print
     )
