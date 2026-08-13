@@ -85,6 +85,23 @@ def _transform(**kwargs):
     return csv_file_path
 
 def _load(**kwargs):
+    # 1. csv 경로 획득 
+    ti             = kwargs["ti"]
+    csv_file_path = ti.xcom_pull(task_ids="transform")
+    logging.info(f'전달한 데이터 파일 경로 {csv_file_path}')
+
+    # 2. csv -> df 로드 
+    # read csv 
+    df = pd.read_csv(csv_file_path)
+
+    # 3. mysql 연결 -> 데이터 삽입
+    hooks = MySqlHook(mysql_conn_id="mysql_default")
+    # conn = hooks.get_conn()
+    try:
+        with hooks.get_conn() as conn:
+            pass
+    except Exception as e:
+        logging.error(f'sql 에러 {e}')
     pass
 
 # DAG 정의 
