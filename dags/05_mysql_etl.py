@@ -50,9 +50,14 @@ def _extract(**kwargs):
     # 파일명 sensor_data_20260813.json : 20260813 -> "ds_nodash" 활용
     # /opt/airflow/dags/data/sensor_data_DAG수행일.json
     file_full_path = f"{DATA_PATH}/sensor_data_{kwargs['ds_nodash']}.json"
+    with open(file_full_path, 'w') as f:
+        json.dump(data, f)
 
     logging.info(f'extract한 데이터 {data}')
-    pass
+    logging.info(f'extract한 데이터 파일 경로 {file_full_path}')
+    # XCOM을 통해 전달
+    return file_full_path
+
 def _transform(**kwargs):
     pass
 def _load(**kwargs):
