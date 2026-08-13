@@ -75,7 +75,14 @@ def _transform(**kwargs):
     # °F = (°C × 9/5) + 32
     target_df["temperature_f"] = (target_df['temperature'] * 9/5) + 32
 
-    pass
+    logging.info(f'가공된 데이터 (rows, cols) {target_df.shape}')
+    # 3. 전처리된 내용 [v]csv|parquet|... 저장 
+    csv_file_path = f"{DATA_PATH}/preprocessing_data_{kwargs['ds_nodash']}.csv"
+    target_df.to_csv(csv_file_path, index=False)
+    logging.info(f'가공된 데이터 저장 {csv_file_path}')
+
+    # 4. 반환, XCOM 전달, 게시
+    return csv_file_path
 
 def _load(**kwargs):
     pass
