@@ -35,10 +35,15 @@ def _extract(**kwargs):
     # 더미 데이터 구성 = [{}, {}, ...]
     data = [
         {
-
-        }
+            
+            "sensor_id"   : f"SENSOR_{i+1}",                              # 장비 ID
+            "timestamp"   : datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # 데이터 생성 시간
+            "temperature" : round(random.uniform(20.0, 150.0), 2),        # 온도 허용 범위
+            "status"      : "on"                                          # on or off
+        } 
         for i in range(10)
     ]
+    logging.info(f'더미데이터 {data}')
     pass
 def _transform(**kwargs):
     pass
