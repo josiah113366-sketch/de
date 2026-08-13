@@ -28,11 +28,32 @@ with DAG(
             "retry_delay"     : timedelta(minutes=5) 
     }, 
     schedule_interval = "@daily",  
-    # 수행 시작 시간 서울 시간대 타임존 조정
     start_date = pendulum.datetime(2026,6,29, tz = KST), 
     catchup = False, 
     tags = ['branch', 'trigger_rule'] 
 ) as dag:
     # 4. 오퍼레이터를 이용하여 task를 정의
+    task_start   = EmptyOperator(
+        task_id = "start"
+    )
+    task_branch  = BranchPythonOperator(
+        task_id = "branch", 
+        python_callable=_branch_cb
+    )
+    task_process = PythonOperator(
+        task_id = "process",
+        python_callable=_process_cb
 
-    # 5. 의존성
+    )
+    task_skip    = EmptyOperator(
+        task_id = "skip"
+    )
+    task_end     = EmptyOperator(
+        task_id = "end"
+    )
+
+    # 5. 의존성(수행 순서), 시나리오별 준비 (사전 요구 사항에 의해 결정)
+    #    기준 스케줄러, cron과 차별성 -> 시나리오 구성 가능
+    task_start >> task_branch 
+    task_branch >> task_process >> task_end
+    task_branch >> task_skip >> task_end
