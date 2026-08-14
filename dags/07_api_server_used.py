@@ -123,6 +123,25 @@ def _extract_user_data(**kwargs):
     pass
 
 def _api_service_call(**kwargs):
+  '''
+    - XCOM에서 데이터 획득 -> api 호출 (post 방식) -> 결과 획득 -> json 역직렬화 -> XCOM 게시
+  '''
+  # XCOM에서 데이터 획득 
+  target_user_data = kwargs['ti'].xcom_pull(task_ids='task_extract_data')
+  logging.info(f'신용 평가 대상 고객 수 {target_user_data}')
+  
+  try:
+    # api 호출 (post 방식) 
+    res = requests.post(API_URL, json=target_user_data) # JSON 문자열 형태로 데이터 전달
+    # 결과 획득 (분기 -> 성공, 실패 (raise)), 200번 체크 등 생략
+    results = res.json() # 역직렬화 (문자열 -> [ dict, dict, ..])
+    logging.info(f'평가 결과 {results}')
+    # XCOM 게시
+    return results
+  except Exception as e:
+    logging.error(f'통신 오류 {e}')
+    raise
+  
   pass
 
 def _load_user_credit(**kwargs):
