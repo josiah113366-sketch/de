@@ -154,10 +154,19 @@ def _load_user_credit(**kwargs):
     with conn.cursor() as cursor:
       # 업데이트 쿼리
       sql = '''
-
+        UPDATE 
+          customers 
+        SET 
+          credit_score=%s, grade=%s
+        WHERE
+          user_id=%s
+        
       '''
       params = [
-
+        (
+          (data["credit_score"], data["grade"], data["user_id"])
+          for data in target_user_data # 하나씩 고객 데이터 획득하여 처리 -> XCOM 전달된 데이터는 타입 유지
+        )
       ]
       # 업데이트 수행
       cursor.executemany(sql, params)
