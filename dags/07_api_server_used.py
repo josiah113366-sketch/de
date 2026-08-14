@@ -9,13 +9,13 @@
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 - 매일 고객이 가입, 업무, 등등 디비 내용이 갱신 (설정)
-- 다음날 00시 01분 00초에 고객 디비 가져와서(extract) -> 신용평가(api 서버 요청) -> 평가결과 획득 -> 고객정보 업데이트
+- 다음날 00시 01분 00초에 고객 디비 가져와서(extract) 신용평가(api 서버 요청) 평가결과 획득 고객정보 업데이트
   - 갱신 주기는 변경될 수 있다(회사별 상이)
 - 배치 데이터 프로세스 작업 - airflow
   - Task 정리 (PythonOperator)
     - t1 : mysql 사용, 테이블이 없으면 생성, 고객 데이터 더미 입력(매번 수행-해쉬(UUID)적용)
       - 원래 배치 작업에서는 필요 없는 작없임
-    - t2 : 고객 데이터 획득 (DB -> DAG의 TI) => XCOM 게시 df or dict
+    - t2 : 고객 데이터 획득 (DB DAG의 TI) => XCOM 게시 df or dict
     - t3 : XCOM 데이터 획득 => API 호출 => 서버 고객데이터 전송 => 신용평가 진행 => 응답 => XCOM 게시
     - t4 : XCOM 데이터 획득 => 신용평가 결과 => 고객 디비 업데이트
 '''
@@ -58,7 +58,7 @@ def _create_dummy_data(**kwargs):
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           )
         ''')
-        # 고객 데이터 생성 -> 삽입
+        # 고객 데이터 생성 삽입
         sql = '''
           insert into customers
           (user_id, income, loan_amt)
@@ -98,78 +98,68 @@ def _extract_user_data(**kwargs):
   '''
   # 1. 훅 획득
   hooks = MySqlHook(mysql_conn_id="mysql_default")
-  # 2. 훅 -> pandas로 sql 결과를 바로 획득 하는 함수 활용 (커넥션, 커서 생략)
-  # 신용 평가 없는 고객 가져오기 
-  # 고객아이디, 소득, 대출 총액 
+  # 2. 훅 pandas로 sql 결과를 바로 획득 하는 함수 활용 (커넥션, 커서 생략), 신용점수 없는 고객만
   df = hooks.get_pandas_df('''
-    SELECT 
-      user_id, 
-      income, 
-      loan_amt 
-    FROM 
+    select
+      user_id, income, loan_amt
+    from 
       customers
-    WHERE 
-      credit_score IS NULL;
+    where
+      credit_score is NULL
+    ;
   ''')
-  # 3. 결과 셋에 따른 처리 
+  # 3. 결과셋에 따른 처리
   if df.empty:
-    logging.info("평가 대상 없음.")
+    logging.info("평가 대상 없음")
     return []
-    pass
   else:
-    # df -> [ dict, dict, ..] 변환 XCOM 개시
-    logging.info(f"평가 대상 {df.shape[0]} 명")
-    return df.to_dict(orient="records")
-    pass
+    # df [ dict, dict, ..] 변환 XCOM 개시
+    logging.info(f"평가 대상 { df.shape[0] }명")
+    return df.to_dict(orient="records")    
 
 def _api_service_call(**kwargs):
   '''
-    - XCOM에서 데이터 획득 -> api 호출 (post 방식) -> 결과 획득 -> json 역직렬화 -> XCOM 게시
+    - XCOM에서 데이터 획득 -> api 호출 (post 방식) -> 결과 획득 -> json 역직렬화 -> XCOM 개시
   '''
-  # XCOM에서 데이터 획득 
-  target_user_data = kwargs['ti'].xcom_pull(task_ids='task_extract_data')
-  logging.info(f'신용 평가 대상 고객 수 {target_user_data}')
-  
+  # XCOM에서 데이터 획득
+  target_user_data = kwargs['ti'].xcom_pull( task_ids='task_extract_data')
+  logging.info(f'신용 평가 대상 고객수 { target_user_data }')
+ 
   try:
-    # api 호출 (post 방식) 
-    res = requests.post(API_URL, json=target_user_data) # JSON 문자열 형태로 데이터 전달
-    # 결과 획득 (분기 -> 성공, 실패 (raise)), 200번 체크 등 생략
-    results = res.json() # 역직렬화 (문자열 -> [ dict, dict, ..])
-    logging.info(f'평가 결과 {results}')
-    # XCOM 게시
+    # api 호출 (post 방식)
+    res = requests.post( API_URL, json=target_user_data) # JSON 문자열 형태로 데이터 전달
+    # 결과 획득 (분기 -> 성공, 실패(raise)), 200 번 체크등 생략, json 역직렬화
+    results = res.json() # 역직렬화 (문자열 => [ dict, dict, ..])
+    logging.info(f'평가 결과 { results }')
+    # XCOM 개시
     return results
   except Exception as e:
-    logging.error(f'통신 오류 {e}')
+    logging.error(f"통신 오류 {e}")
     raise
 
 def _load_user_credit(**kwargs):
-  target_user_data = kwargs['ti'].xcom_pull(task_ids='task_api_service_data')
+  # 1. 결과값 획득
+  target_user_data = kwargs['ti'].xcom_pull( task_ids='task_api_service_data')
   if not target_user_data:
     logging.error("신용 평가 결과 없음")
     raise ValueError("신용 평가 결과 없음")
 
   # 2. 고객 정보 업데이트
   hooks = MySqlHook(mysql_conn_id="mysql_default")
-  with hooks.get_conn() as conn: 
+  with hooks.get_conn() as conn:
     with conn.cursor() as cursor:
       # 업데이트 쿼리
       sql = '''
-        UPDATE 
-          customers 
-        SET 
-          credit_score=%s, grade=%s
-        WHERE
-          user_id=%s
-        
+        update customers
+        set credit_score=%s, grade=%s
+        where user_id=%s
       '''
       params = [
-        (
-          (data["credit_score"], data["grade"], data["user_id"])
-          for data in target_user_data # 하나씩 고객 데이터 획득하여 처리 -> XCOM 전달된 데이터는 타입 유지
-        )
+        ( data["credit_score"], data["grade"], data["user_id"])
+        for data in target_user_data # 하나씩 고객데이터 획득하여 처리 -> XCOM 전달된 데이터는 타입 유지
       ]
       # 업데이트 수행
-      cursor.executemany(sql, params)
+      cursor.executemany( sql, params )
       conn.commit()
 
   pass
