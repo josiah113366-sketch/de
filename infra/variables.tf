@@ -1,13 +1,13 @@
 variable "aws_region" {
   description = "AWS 리전"
   type        = string
-  default     = "ap-southeast-1"
+  default     = "ap-northeast-2"
 }
 
 variable "project_name" {
   description = "데이터 엔지니어 프로젝트 연습용"
   type        = string
-  default     = "de-ai-16-de"
+  default     = "de-ai-16-infra"
 }
 
 variable "environment" {
