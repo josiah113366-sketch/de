@@ -17,7 +17,7 @@ variable "environment" {
 }
 
 # s3 버킷을 삭제할 때, 버킷 내부의 객체가 있을 경우 삭제 OK, 삭제 실패 처리
-variable "s3_force_destory" {
+variable "s3_force_destroy" {
   description = "True면 버킷 내부 데이터 모두 삭제하고, 버킷까지 삭제"
   type        = bool
   default     = true
