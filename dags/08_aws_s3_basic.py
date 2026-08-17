@@ -25,6 +25,25 @@ BUCKET_NAME      = "de-ai-16-infra-s3-bk-827913617635"
 UPLOAD_FILE_NAME = "costs.csv" # 각자 다를수 있음
 LOCAL_PATH       = f"/opt/airflow/dags/data/{UPLOAD_FILE_NAME}" # 컨테이너에서 업로드 경로
 
+# 4-1.콜백 함수
+def _check_s3(**kwargs):
+  # S3Hook을 이용하여 실제 업로드 되었는지 체킹
+  # 1. 훅 생성
+  hook = S3Hook(aws_conn_id="aws_default")
+  # 2. 훅을 이용 키 체크 -> 모든키 조회 (임시 방편)
+  keys = hook.list_keys(bucket_name=BUCKET_NAME)
+  # 3. 키 체크
+  if not keys:
+      raise ValueError("버킷내 키 없다. 업로드 실패") # 1회성(데이터 업로드된 이후 x)
+  # 4. 체킹
+  #for key in keys:
+  #    logging.info(f"키 : {key}")
+  if UPLOAD_FILE_NAME in keys:
+     logging.info(f"{UPLOAD_FILE_NAME} 파일 s3에 업로드 확인 완료")
+
+  pass
+
+
 # 3. DAG 정의
 with DAG(  
   dag_id      = "08_aws_s3_basic",
@@ -51,7 +70,10 @@ with DAG(
     replace   = True               # 키가 동일하면 (동일 파일명이면) -> 대체
   )
   # 체크 (조회, get, list)
-  task_check_s3 = PythonOperator()
+  task_check_s3 = PythonOperator(
+    task_id   = "check_s3",
+    python_callable = _check_s3
+  )
 
   # 5. 의존성
   task_upload_to_s3 >> task_check_s3
