@@ -16,7 +16,7 @@ import logging
 import pendulum
 
 # 2. 환경변수
-BUCKET_NAME      = "de-ai-25-infra-s3-bk-827913617635"
+BUCKET_NAME      = "de-ai-16-infra-s3-bk-827913617635"
 UPLOAD_FILE_NAME = "sensor_data.csv"              # 현재시간등 인식/구분 정보 누락
 S3_KEY           = f'airflow/{UPLOAD_FILE_NAME}'  # s3상 위치 조정
 
