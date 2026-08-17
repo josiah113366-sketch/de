@@ -26,6 +26,33 @@ UPLOAD_FILE_NAME = "costs.csv" # 각자 다를수 있음
 LOCAL_PATH       = f"/opt/airflow/dags/data/{UPLOAD_FILE_NAME}" # 컨테이너에서 업로드 경로
 
 # 3. DAG 정의
+with DAG(  
+  dag_id      = "08_aws_s3_basic",
+  description = "s3 단순 업로드",
+  default_args= {
+    "owner"           : "aic-de1-admin",    
+    "retries"         : 1,
+    "retry_delay"     : timedelta(minutes=1)
+  },
+  schedule_interval = "@daily", # 00시 01분 00초에 참고용
+  start_date  = pendulum.datetime( 2026,6,29, tz=pendulum.timezone("Asia/Seoul") ),
+  catchup     = False,
+  tags        = ['aws', 's3']
+) as dag:  
+  
   # 4. task 
+  # 업로드 (put)
+  task_upload_to_s3 = LocalFilesystemToS3Operator(
+    task_id   = "upload_to_s3",
+    filename  = LOCAL_PATH,        # 실제 로컬 pc에 존재하는 파일의 풀경로
+    dest_key  = UPLOAD_FILE_NAME,  # s3 버킷 내에서 객체간 구분하는 키 -> 파일명 대체
+    dest_bucket = BUCKET_NAME,     # 버킷명
+    aws_conn_id = "aws_default",   # aws 접속 정보
+    replace   = True               # 키가 동일하면 (동일 파일명이면) -> 대체
+  )
+  # 체크 (조회, get, list)
+  task_check_s3 = PythonOperator()
+
   # 5. 의존성
+  task_upload_to_s3 >> task_check_s3
 
