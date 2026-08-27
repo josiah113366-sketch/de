@@ -35,7 +35,7 @@ TARGET_DAY   = "26"   #"{{ dag_run.conf.get('target_date', ds)[8:10] }}"
 
 # 매일 1개의 데이터셋 구성 => 파티션 사용 권장
 # s3://버킷/gold/daily_report/year=2026/month=08/day=26/
-GOLD_PARTITION_PREFIX = f"{GOLD_PREFIX}/year={TARGET_YEAR}/month={TARGET_MONTH}/day={TARGET_DAY}/"
+GOLD_PARTITION_PREFIX = f"{GOLD_PREFIX}year={TARGET_YEAR}/month={TARGET_MONTH}/day={TARGET_DAY}/"
 
 # 3. DAG 정의
 with DAG(  
