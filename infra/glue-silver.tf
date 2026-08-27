@@ -34,7 +34,8 @@ resource "aws_glue_catalog_table" "silver" {
 
   # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.data.bucket}/silver/"
+    # location      = "s3://${aws_s3_bucket.data.bucket}/silver/"
+    location      = "s3://${var.silver_bucket_name}/silver/"
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
     compressed    = true

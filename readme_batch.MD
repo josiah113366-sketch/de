@@ -10,4 +10,22 @@
 
 # 인프라 구성
 - s3.tf : 보정 (기존 s3 버킷 사용하도록 이름, 태그 조정, 삭제 여부 조정)
-- 
+```
+terraform -chdir=infra init
+terraform -chdir=infra fmt
+terraform -chdir=infra plan
+terraform -chdir=infra apply
+```
+
+# 인프라 구성후 데이터 확인
+- 아테나 > 본인 작업 그룹 선택 > db 선택 > 쿼리 편집기 아래 쿼리 실행
+```
+-- 데이터의 총개수 조회
+select count(*) as cnt
+from silver_logs_tbl
+where year = '2026'
+	and month = '08'
+	and day = '26'
+	and hour = '21'
+;
+```
