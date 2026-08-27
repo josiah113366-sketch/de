@@ -11,9 +11,9 @@ from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectsOperator
 # 2. 환경변수
 AWS_CONN_ID         = "aws_default"
 # 버킷
-BUCKET_NAME         = "de-ai-25-loggen-s3-bk-827913617635"
+BUCKET_NAME         = "de-ai-16-loggen-s3-bk-827913617635"
 # 디비명
-DATABASE_NAME       = "de_ai_25_loggen_silver_glue_db"
+DATABASE_NAME       = "de_ai_16_loggen_silver_glue_db"
 # 테이블명
 SILVER_TABLE_NAME   = "silver_logs_tbl"
 
