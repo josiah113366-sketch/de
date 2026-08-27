@@ -8,62 +8,37 @@ resource "aws_glue_catalog_database" "silver" {
 }
 
 resource "aws_glue_catalog_table" "silver" {
-  # 테이블명
   name = "silver_logs_tbl"
-  # 테이블의 원소속 (데이터베이스) 설정
   database_name = aws_glue_catalog_database.silver.name
-  # 데이터는 glue 외부에 존재함. 원데이터는 s3에 저장되어 있음 -> 데이터가 glue 외부에 있으므로
   table_type = "EXTERNAL_TABLE"
 
-  # 파라미터 지정
   parameters = {
-    # 실 데이터가 glue 외부에 존재함을 표시
     EXTERNAL = "TRUE"
-    # parquet의 압축 방식
     "parquet.compression" = "SNAPPY"
-    # 파티션 활성화 (s3://버킷/silver/year=2026/...), 파티션화되어 저장되어 있음 (partition projection)
     "projection.enabled" = "true"
-    # 파티션 정보 -> year, month, day, hour -> 타입, 값 범위 지정
-    # year
     "projection.year.type"  = "integer"
-    "projection.year.range" = "2026,2040" # 뒤에 2040은 설정값, 2026은 현재로 가정
-    # month
-    # 1 -> 01, 2 -> 02 -> digits = 2
+    "projection.year.range" = "2026,2040" 
     "projection.month.type"   = "integer"
     "projection.month.range"  = "1,12"
-    "projection.month.digits" = "2" # 2자리로 맞춤
-    # day 
+    "projection.month.digits" = "2" 
     "projection.day.type"   = "integer"
     "projection.day.range"  = "1,31"
-    "projection.day.digits" = "2" # 2자리로 맞춤
-    # hour
+    "projection.day.digits" = "2" 
     "projection.hour.type"   = "integer"
     "projection.hour.range"  = "0,23"
-    "projection.hour.digits" = "2" # 2자리로 맞춤
-
-    # 파티션 S3 경로 규칙
-    # sql : ~ where year = '2026' ... -> 
-    # $${year} =? ${year} 자체로 전달하기 위해서 앞에 $ 추가한 표현
+    "projection.hour.digits" = "2" 
     "storage.location.template" = "s3://${aws_s3_bucket.data.bucket}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
   }
 
   # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
   storage_descriptor {
-    # 실제 silver 상에 s3 root 경로
     location = "s3://${aws_s3_bucket.data.bucket}/silver/"
-
-    # s3 파일이 parquet 형식임을 알려주는 
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-
-    # parquet 내부에서 SNAPPY 압축 활용
     compressed = true
 
-    # parquet 파일과 GLue/Athena 등 테이블 간 사이에서 데이터 구조 해석하는 역할
     ser_de_info {
-      # 식별을 위한 이름
       name = "silver-parquet"
-      # 데이터 해석을 위한 parquet ser_de
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
 
@@ -136,6 +111,7 @@ resource "aws_glue_catalog_table" "silver" {
       type = "struct<status_code:int,latency_ms:bigint,response_bytes:bigint>"
     }
 
+    # 모든 도메인의 데이터를 받을 수 있도록 슈퍼셋 구성
     # data 중첩 스키마 => 도메인별로 상이=> 모든 도메인의 키를 등록
     # "data":{"user_id":"usr_163397","session_id":"b297a82569a645bc841c","product_id":"prd_83053","category":"home","quantity":1,"unit_price":274300,"currency":"KRW","campaign":"retargeting"}
     columns {
