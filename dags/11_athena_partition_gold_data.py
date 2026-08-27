@@ -39,8 +39,8 @@ GOLD_PARTITION_PREFIX = f"{GOLD_PREFIX}/year={TARGET_YEAR}/month={TARGET_MONTH}/
 
 # 3. DAG 정의 
 with DAG(  
-  dag_id      = "10_cats_gold_data",
-  description = "Silver -> DAG + Athena -> Gold, parquet 생성",
+  dag_id      = "11_athena_partition_gold_data",
+  description = "Silver -> Partition 단위 Gold, parquet 생성",
   default_args= {
     "owner"           : "aic-de1-admin",    
     "retries"         : 1,
@@ -49,10 +49,15 @@ with DAG(
   schedule_interval = "0 5 * * *", # 00시 05분 00초에 참고용
   start_date  = pendulum.datetime( 2026,6,29, tz=pendulum.timezone("Asia/Seoul") ),
   catchup     = False,
-  tags        = ['aws', 'athena', 'ctas']
+  tags        = ['aws', 'athena', 'partition']
 ) as dag:  
-  
+
   # 4. task 정의 (오퍼레이터 사용)
+  # 4-1. Gold 테이블 생성 (최초 실행 시 1회 생성 -> 이후 테이블 유지)
+  # 4-2. 동일 날짜에 대해서 중복적 실행하는 컨셉이라면 -> 허용 (1일 1회인데 허용), 하루에 여러 번 수행 컨셉 (누적)
+  # 4-3. 누적 교체하는 관점 -> 데이터 삭제 처리 필요
+  # 4-4. 당일 전체 데이터에 대한(파티션 수행) 데이터 insert 처리
+
   # 4-1. 기존 CTAS Gold 테이블 삭제
   t1_drop_gold_table = AthenaOperator(
     task_id = "drop_gold_table",
