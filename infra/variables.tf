@@ -4,10 +4,11 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
+# 프로젝트명 수정 : de-ai-16-infra -> de-ai-16-loggen
 variable "project_name" {
   description = "데이터 엔지니어 프로젝트 연습용"
   type        = string
-  default     = "de-ai-16-infra"
+  default     = "de-ai-16-loggen"
 }
 
 variable "environment" {
@@ -20,5 +21,5 @@ variable "environment" {
 variable "s3_force_destroy" {
   description = "True면 버킷 내부 데이터 모두 삭제하고, 버킷까지 삭제"
   type        = bool
-  default     = true
+  default     = false
 }
