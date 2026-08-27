@@ -121,7 +121,7 @@ with DAG(
     # 4-4. 당일 전체 데이터에 대한(파티션 수행) 데이터 insert 처리
     t4_insert_gold_table = AthenaOperator(
         task_id = "insert_gold_table",
-        # sql
+        # 데이터 조회하여 insert 할때 파티션정보를 같이 추가하여, 해당 결과셋을 parquet로 만들어서 어떤 위치에 저장할지 지정
         query = f'''
             insert into {GOLD_TABLE_NAME}
             select
@@ -146,7 +146,7 @@ with DAG(
                 COALESCE( SUM(response.response_bytes), 0 ) AS total_response_bytes,
                 
                 '{TARGET_YEAR}' as year,
-                '{TARGET_MONTH}' as month
+                '{TARGET_MONTH}' as month,
                 '{TARGET_DAY}' as day
             from {SILVER_TABLE_NAME}
             where 
