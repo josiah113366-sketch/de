@@ -1,5 +1,5 @@
 resource "aws_glue_catalog_database" "silver" {
-  name = "${lower(replace(var.project_name, "-", "_"))}_silver_glue_db"
+  name        = "${lower(replace(var.project_name, "-", "_"))}_silver_glue_db"
   description = "Silver parquet 데이터를 athena/airflow에서 조회하기 위한 Glue DB"
   # 향후 실습을 위해서 실수로 삭제 방지
   lifecycle {
@@ -8,25 +8,25 @@ resource "aws_glue_catalog_database" "silver" {
 }
 
 resource "aws_glue_catalog_table" "silver" {
-  name = "silver_logs_tbl"
+  name          = "silver_logs_tbl"
   database_name = aws_glue_catalog_database.silver.name
-  table_type = "EXTERNAL_TABLE"
+  table_type    = "EXTERNAL_TABLE"
 
   parameters = {
-    EXTERNAL = "TRUE"
-    "parquet.compression" = "SNAPPY"
-    "projection.enabled" = "true"
-    "projection.year.type"  = "integer"
-    "projection.year.range" = "2026,2040" 
+    EXTERNAL                  = "TRUE"
+    "parquet.compression"     = "SNAPPY"
+    "projection.enabled"      = "true"
+    "projection.year.type"    = "integer"
+    "projection.year.range"   = "2026,2040"
     "projection.month.type"   = "integer"
     "projection.month.range"  = "1,12"
-    "projection.month.digits" = "2" 
-    "projection.day.type"   = "integer"
-    "projection.day.range"  = "1,31"
-    "projection.day.digits" = "2" 
-    "projection.hour.type"   = "integer"
-    "projection.hour.range"  = "0,23"
-    "projection.hour.digits" = "2" 
+    "projection.month.digits" = "2"
+    "projection.day.type"     = "integer"
+    "projection.day.range"    = "1,31"
+    "projection.day.digits"   = "2"
+    "projection.hour.type"    = "integer"
+    "projection.hour.range"   = "0,23"
+    "projection.hour.digits"  = "2"
     # "storage.location.template" = "s3://${aws_s3_bucket.data.bucket}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
     #"storage.location.template" = "s3://${locals.airflow_bucket_name}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
     "storage.location.template" = "s3://${var.silver_bucket_name}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
@@ -34,13 +34,13 @@ resource "aws_glue_catalog_table" "silver" {
 
   # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
   storage_descriptor {
-    location = "s3://${aws_s3_bucket.data.bucket}/silver/"
+    location      = "s3://${aws_s3_bucket.data.bucket}/silver/"
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-    compressed = true
+    compressed    = true
 
     ser_de_info {
-      name = "silver-parquet"
+      name                  = "silver-parquet"
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
 
