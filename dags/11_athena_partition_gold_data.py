@@ -143,7 +143,11 @@ with DAG(
                 APPROX_PERCENTILE( response.latency_ms, 0.95 ) AS p95_latency_ms,
                 MAX(response.latency_ms) AS max_latency_ms,
                 COALESCE( SUM(request.request_bytes), 0 ) AS total_request_bytes,
-                COALESCE( SUM(response.response_bytes), 0 ) AS total_response_bytes
+                COALESCE( SUM(response.response_bytes), 0 ) AS total_response_bytes,
+                
+                '{TARGET_YEAR}' as year,
+                '{TARGET_MONTH}' as month
+                '{TARGET_DAY}' as day
             from {SILVER_TABLE_NAME}
             where 
                 year='{TARGET_YEAR}' and
