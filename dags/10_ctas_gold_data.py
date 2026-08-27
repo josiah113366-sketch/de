@@ -54,6 +54,10 @@ with DAG(
     query = f'''
       DROP TABLE IF EXISTS {GOLD_TABLE_NAME}
     '''
+    # 접속 및 디비 정보
+    aws_conn_id = AWS_CONN_ID, 
+    database = DATABASE_NAME, 
+    output_location = QUERY_RESULT_S3
   )
   # # 4-2. 기존 CTAS S3 데이터 삭제
   # t2_delete_gold_s3 = S3DeleteObjectOperator(
