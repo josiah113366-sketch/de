@@ -32,12 +32,30 @@ where year = '2026'
 
 # 시나리오 
 - 데이터를 계속 데이터 파이프라인을 통해서 저장되어 있다 
-- 파티션 기준 1시간 단위로 파티션 분리되고 있음
+- 파티션 기준 1시간 단위로 파티션 분리되고 있음 (24시간 풀 가동 계속 저장 중)
 ```
-00:00 ~ 01:00 → Silver 저장
+00:00 ~ 01:00 → Silver 저장 (1시간 내에 수십~수천회까지도 저장중임, firehose 등 체크)
 01:00 ~ 02:00 → Silver 저장
 02:00 ~ 03:00 → Silver 저장
 ...
 22:00 ~ 23:00 → Silver 저장
 23:00 ~ 24:00 → Silver 저장
 ```
+
+- 미션 
+  - 8월 27일 00:05이 되면 Airflow에 등록된 DAG가 작동
+  - 8월 26일 하루치 데이터가 모두 수집되었으므로 일별 Gold 데이터를 생성하시오. 
+    - 방식 
+      - 과거의 일별 집계 Gold가 모두 필요한가? (운영 -> 일별 집계 데이터 보관)
+      - 오직 집계된 전날 데이터만 필요한가? (CTAS : Create Table As Select)
+
+  - 집계 데이터 샘플
+  ```
+        | domain    | event_type   | service          |   total | error | avg latency |
+        | --------- | ------------ | ---------------- | ------: | ----: | ----------: |
+        | ecommerce | product_view | product-service  | 530,000 | 1,200 |          42 |
+        | ecommerce | purchase     | order-service    | 140,000 |   850 |         121 |
+        | finance   | transfer     | transfer-service | 300,000 |   320 |          83 |
+        | game      | login        | auth-service     | 410,000 | 1,100 |          51 |
+  ```
+      
