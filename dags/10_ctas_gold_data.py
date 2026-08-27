@@ -1,6 +1,6 @@
 # Silver -> Gold (CTAS 방식으로 구성)
 # 1. 모듈 가져오기 
-from datetime import datetime
+from datetime import timedelta
 import pendulum 
 from airflow import DAG 
 from airflow.providers.amazon.aws.operators.athena import AthenaOperator
@@ -32,7 +32,27 @@ TARGET_MONTH = "08" # "{{ dag_run.conf.get('target_date', ds)[5:7] }}"
 TARGET_DAY = "26" # "{{ dag_run.conf.get('target_date', ds)[8:10] }}"
 
 # 3. DAG 정의 
-
+with DAG(  
+  dag_id      = "10_cats_gold_data",
+  description = "Silver -> DAG + Athena -> Gold, parquet 생성",
+  default_args= {
+    "owner"           : "aic-de1-admin",    
+    "retries"         : 1,
+    "retry_delay"     : timedelta(minutes=1)
+  },
+  schedule_interval = "0 5 * * *", # 00시 05분 00초에 참고용
+  start_date  = pendulum.datetime( 2026,6,29, tz=pendulum.timezone("Asia/Seoul") ),
+  catchup     = False,
+  tags        = ['aws', 'athena', 'ctas']
+) as dag:  
+  
   # 4. task 정의 (오퍼레이터 사용)
+  # 4-1. 기존 CTAS Gold 테이블 삭제
+  t1_drop_gold_table = AthenaOperator()
+  # 4-2. 기존 CTAS S3 데이터 삭제
+  t2_delete_gold_s3 = S3DeleteObjectOperator()
+  # 4-3. CTAS 실행 (silver sql 수행 -> 결과 -> 테이블 구성 -> 결과 데이터는 parquet 저장)
+  t3_create_gold_table_with_ctas = AthenaOperator()
 
-  # 5. 의존성 구성 (수행 순서 >>)
+  # 5. 의존성 구성 (수행 순서 >> ) 
+  t1_drop_gold_table >> t2_delete_gold_s3 >> t3_create_gold_table_with_ctas
