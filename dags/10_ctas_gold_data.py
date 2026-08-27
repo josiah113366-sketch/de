@@ -48,11 +48,22 @@ with DAG(
   
   # 4. task 정의 (오퍼레이터 사용)
   # 4-1. 기존 CTAS Gold 테이블 삭제
-  t1_drop_gold_table = AthenaOperator()
-  # 4-2. 기존 CTAS S3 데이터 삭제
-  t2_delete_gold_s3 = S3DeleteObjectOperator()
-  # 4-3. CTAS 실행 (silver sql 수행 -> 결과 -> 테이블 구성 -> 결과 데이터는 parquet 저장)
-  t3_create_gold_table_with_ctas = AthenaOperator()
+  t1_drop_gold_table = AthenaOperator(
+    task_id = "drop_gold_table"
+    # sql 
+    query = f'''
+      DROP TABLE IF EXISTS {GOLD_TABLE_NAME}
+    '''
+  )
+  # # 4-2. 기존 CTAS S3 데이터 삭제
+  # t2_delete_gold_s3 = S3DeleteObjectOperator(
+  #   task_id = "delete_gold_s3"
+  # )
+  # # 4-3. CTAS 실행 (silver sql 수행 -> 결과 -> 테이블 구성 -> 결과 데이터는 parquet 저장)
+  # t3_create_gold_table_with_ctas = AthenaOperator(
+  #   task_id = "create_gold_table_with_ctas"
+  # )
 
   # 5. 의존성 구성 (수행 순서 >> ) 
-  t1_drop_gold_table >> t2_delete_gold_s3 >> t3_create_gold_table_with_ctas
+  t1_drop_gold_table
+  # t1_drop_gold_table >> t2_delete_gold_s3 >> t3_create_gold_table_with_ctas
