@@ -111,6 +111,13 @@ with DAG(
     )
     
     # 4-3. 누적 교체하는 관점 -> 데이터 삭제 처리 필요
+    t3_delete_gold_s3  = S3DeleteObjectsOperator(
+        task_id = "delete_gold_s3",
+        bucket  = BUCKET_NAME,
+        prefix  = GOLD_PARTITION_PREFIX,
+        aws_conn_id = AWS_CONN_ID
+    )
+
     # 4-4. 당일 전체 데이터에 대한(파티션 수행) 데이터 insert 처리
     
 
@@ -185,4 +192,4 @@ with DAG(
     # )
 
     # 5. 의존성 구성 (수행 순서 >> )
-    t1_create_gold_table >> t2_drop_partition
+    t1_create_gold_table >> t2_drop_partition >> t3_delete_gold_s3
