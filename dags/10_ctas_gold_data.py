@@ -75,7 +75,7 @@ with DAG(
     query = f'''
       CREATE TABLE {GOLD_TABLE_NAME} 
       WITH (
-        format            = "PARQUET",
+        format            = 'PARQUET',
         external_location = '{GOLD_LOCATION}'
       )
       AS 
