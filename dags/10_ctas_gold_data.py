@@ -21,9 +21,15 @@ GOLD_TABLE_NAME = "gold_daily_report_ctas_tbl"
 # Athena SQL 실행 결과 저장 -> 직접 지정 or 작업 그룹 지정 -> 저장되는 위치가 결정
 QUERY_RESULT_S3 = f"s3://{BUCKET_NAME}/athena/dags/"
 
-# CTAS가 실제로 참조하는 데이터 저장 위치 
+# CTAS가 실제로 참조하는 데이터 저장 위치 -> parquet 저장
 GOLD_PREFIX = "gold/daily_report_ctas"
 GOLD_LOCATION = f"s3://{BUCKET_NAME}/{GOLD_PREFIX}"
+
+# 처리 대상 날짜, 시간 등 세팅 (yyyy:MM:dd hh:mm:ss)
+TARGET_DATE = "{{ dag_run.conf.get('target_date', ds) }}"
+TARGET_YEAR = "2026" # "{{ dag_run.conf.get('target_date', ds)[0:4] }}"
+TARGET_MONTH = "08" # "{{ dag_run.conf.get('target_date', ds)[5:7] }}"
+TARGET_DAY = "26" # "{{ dag_run.conf.get('target_date', ds)[8:10] }}"
 
 # 3. DAG 정의 
 
