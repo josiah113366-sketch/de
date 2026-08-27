@@ -27,7 +27,9 @@ resource "aws_glue_catalog_table" "silver" {
     "projection.hour.type"   = "integer"
     "projection.hour.range"  = "0,23"
     "projection.hour.digits" = "2" 
-    "storage.location.template" = "s3://${aws_s3_bucket.data.bucket}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
+    # "storage.location.template" = "s3://${aws_s3_bucket.data.bucket}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
+    #"storage.location.template" = "s3://${locals.airflow_bucket_name}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
+    "storage.location.template" = "s3://${var.silver_bucket_name}/silver/year=$${year}/month=$${month}/day=$${day}/hour=$${hour}"
   }
 
   # 실제 데이터가 어디에 존재, 어떤 파일 형식, 어떤 스키마를 가지는지 구성
