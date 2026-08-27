@@ -120,5 +120,6 @@ with DAG(
   )
 
   # 5. 의존성 구성 (수행 순서 >> ) 
-  t1_drop_gold_table >> t2_delete_gold_s3
-  # t1_drop_gold_table >> t2_delete_gold_s3 >> t3_create_gold_table_with_ctas
+  t1_drop_gold_table >> t2_delete_gold_s3 >> t3_create_gold_table_with_ctas
+  # t1_drop_gold_table >> t2_delete_gold_s3
+  
