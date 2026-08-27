@@ -1,11 +1,11 @@
-# Silver -> Gold (CTAS 방식으로 구성)
-#           항상 최신(꺠끗한 상태)에서 데이터를 획득하여 집계 등 처리 가능
-#           멱등성 : 연산을 여러 번 수행해도 결과가 처음 수행한 것과 똑같은 성질 (값 x, 절차, 처리 등 수행 방식)
+# Silver -> Gold (운영형/ 데이터는 파티션 단위로 insert 처리됨(일간 집계 데이터), 기존 데이터 삭제 x, 테이블 삭제 x)
+
 # 1. 모듈 가져오기 
 from datetime import timedelta
 import pendulum 
 from airflow import DAG 
 from airflow.providers.amazon.aws.operators.athena import AthenaOperator
+# 하루에 여러 번 수행 시 -> 재실행 -> 기존 데이터가 대체되는 방식 필요
 from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectsOperator
 
 # 2. 환경 변수
@@ -18,17 +18,17 @@ DATABASE_NAME = "de_ai_16_loggen_silver_glue_db"
 SILVER_TABLE_NAME = "silver_logs_tbl"
 
 # 1회성 테이블 (24시간 유지 -> 다음번 batch 작업 시 삭제, 신규 생성 테이블), 운영 사용 테이블 겹치면 x
-GOLD_TABLE_NAME = "gold_daily_report_ctas_tbl"
+GOLD_TABLE_NAME = "gold_daily_report_tbl"
 
-# Athena SQL 실행 결과 저장 -> 직접 지정 or 작업 그룹 지정 -> 저장되는 위치가 결정
+# Athena SQL 실행 결과 저장 -> [v] 직접 지정 or 작업 그룹 지정 -> 저장되는 위치가 결정
 QUERY_RESULT_S3 = f"s3://{BUCKET_NAME}/athena/dags/"
 
-# CTAS가 실제로 참조하는 데이터 저장 위치 -> parquet 저장
-GOLD_PREFIX = "gold/daily_report_ctas"
+# 실제 데이터 저장 위치 -> parquet 저장
+GOLD_PREFIX = "gold/daily_report/"
 GOLD_LOCATION = f"s3://{BUCKET_NAME}/{GOLD_PREFIX}"
 
-# 처리 대상 날짜, 시간 등 세팅 (yyyy:MM:dd hh:mm:ss)
-TARGET_DATE = "{{ dag_run.conf.get('target_date', ds) }}"
+# 처리 대상 날짜, 시간 등 세팅 (yyyy:MM:dd hh:mm:ss) -> 추후 실제 작동 시에는 주석 내용 반영
+TARGET_DATE = "2026-08-26"  # "{{ dag_run.conf.get('target_date', ds) }}"
 TARGET_YEAR = "2026" # "{{ dag_run.conf.get('target_date', ds)[0:4] }}"
 TARGET_MONTH = "08" # "{{ dag_run.conf.get('target_date', ds)[5:7] }}"
 TARGET_DAY = "26" # "{{ dag_run.conf.get('target_date', ds)[8:10] }}"
