@@ -4,7 +4,7 @@ from datetime import timedelta
 import pendulum 
 from airflow import DAG 
 from airflow.providers.amazon.aws.operators.athena import AthenaOperator
-from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectOperator
+from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectsOperator
 
 # 2. 환경 변수
 AWS_CONN_ID = "aws_default"
