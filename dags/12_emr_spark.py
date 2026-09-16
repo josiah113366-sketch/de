@@ -99,7 +99,7 @@ with DAG(
     "retries"         : 1,
     "retry_delay"     : timedelta(minutes=1)
   },
-  schedule_interval = "daily", 
+  schedule_interval = "@daily", 
   start_date  = pendulum.datetime( 2026,6,29, tz=pendulum.timezone("Asia/Seoul") ),
   catchup     = False,
   tags        = ['aws', 'spark', 'emr']
@@ -111,7 +111,7 @@ with DAG(
     # 인프라 구성 dict로 표현 == 테라폼의 resource "aws_emr_cluster" {}
     job_flow_overrides = JOB_FLOW_OVERRIDES,
     # aws 연결 정보 
-    aws_conn_id = "aws_default"
+    aws_conn_id = "aws_default",
     # 인프라 구성 후 클러스터를 참조할 수 있는 리소스 id를 자동 반환
   )
   dummy_task             = PythonOperator( # 더미 작업, 인프라 구성 완료됨을 확인, 생략 가능함 
@@ -136,7 +136,7 @@ with DAG(
   terminate_cluster_task = EmrTerminateJobFlowOperator( # EMR 클러스터 해제
     task_id = "terminate_cluster",
     job_flow_id = "{{ task_instance.xcom_pull(task_ids='create_cluster', key='return_value') }}",
-    aws_conn_id = "aws_default"
+    aws_conn_id = "aws_default", 
     trigger_rule = "all_done" # 위의 task 실패하더라도, 반드시 emr 삭제한다 
 
   )
