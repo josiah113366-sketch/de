@@ -13,18 +13,50 @@ SPARK_SCRIPT_PATH = f"s3://{BUCKET_NAME}/spark/scripts/spark_etl.py"
 EMR_LOG_URI = f"s3://{BUCKET_NAME}/spark/emr_logs/" 
 
 # 3. 인프라 설정 dict
-JOB_FLOW_OVERRIDES = {} 
+JOB_FLOW_OVERRIDES = {
+  "Name": "Airflow-Automated-EMR-Cluster-de30",
+  "ReleaseLabel": "emr-6.10.0",
+  "Applications": [
+      {"Name": "Hadoop"},
+      {"Name": "Spark"},
+  ],
+  "Instances": {
+      "Ec2SubnetId": "subnet-0928223142a64ef05",
+      "InstanceGroups": [
+          {
+              "Name": "Master node",
+              "Market": "SPOT",
+              "InstanceRole": "MASTER",
+              "InstanceType": "m5.xlarge",
+              "InstanceCount": 1,
+          },
+          {
+              "Name": "Core nodes",
+              "Market": "SPOT",
+              "InstanceRole": "CORE",
+              "InstanceType": "m5.xlarge",
+              "InstanceCount": 2,
+          },
+      ],
+      "KeepJobFlowAliveWhenNoSteps": True,
+      "TerminationProtected": False,
+    },
+    "JobFlowRole": "EMR_EC2_DefaultRole",
+    "ServiceRole": "EMR_DefaultRole",
+    "LogUri": EMR_LOG_URI,
+    "VisibleToAllUsers": True,
+} 
 SPARK_SUBMITS = [
   {
     "Name": "Daily Data Cleaning Job",
-    "ActionOnFailure": "CONTINUE",
+    "ActionOnFailure": "CONTINUE",      # 작업이 실패 나더라도 다음 스텝 진행을 위한 구성
     "HadoopJarStep": {
         "Jar": "command-runner.jar",
         "Args": [
-            "spark-submit",
-            "--deploy-mode", "cluster",
+            "spark-submit",             # 스파크 구동을 위한 명령어 
+            "--deploy-mode", "cluster", # 스파크 구동 환경 -> 클러스터 지정
             SPARK_SCRIPT_PATH,
-            "2026-09-16" # 임시 편성
+            "2026-09-16"                # 임시 편성, ds 등 값을 획득하여 처리 
         ],
     },
   }
