@@ -15,7 +15,19 @@ EMR_LOG_URI = f"s3://{BUCKET_NAME}/spark/emr_logs/"
 # 3. 인프라 설정 dict
 JOB_FLOW_OVERRIDES = {} 
 SPARK_SUBMITS = [
-  {}
+  {
+    "Name": "Daily Data Cleaning Job",
+    "ActionOnFailure": "CONTINUE",
+    "HadoopJarStep": {
+        "Jar": "command-runner.jar",
+        "Args": [
+            "spark-submit",
+            "--deploy-mode", "cluster",
+            SPARK_SCRIPT_PATH,
+            "2026-09-16" # 임시 편성
+        ],
+    },
+  }
 ]
 
 # 4. 콜백 함수 
