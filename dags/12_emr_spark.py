@@ -11,6 +11,9 @@ from airflow.providers.amazon.aws.sensors.emr import EmrStepSensor
 
 # 3. 인프라 설정 dict
 JOB_FLOW_OVERRIDES = {} 
+SPARK_SUBMITS = [
+   {}
+]
 
 # 4. 콜백 함수 
 def _dummy_task_cb():
@@ -45,13 +48,26 @@ with DAG(
     python_callable = _dummy_task_cb 
   )
   run_spark_task         = EmrAddStepsOperator( # 스파크 코드 작동 ETL 처리 
-    task_id = "run_spark"
+    task_id = "run_spark", 
+    # 스파크가 작동할 환경 -> 클러스터의 id를 세팅 
+    job_flow_id = "{{ task_instance.xcom_pull(task_ids='create_cluster', key='return_value') }}",
+    # 스파크 지정 -> 도커 -> spark_submit ... 실행
+    steps = SPARK_SUBMITS, 
+    aws_conn_id = "aws_default"
   )
   watch_spark_task       = EmrStepSensor( # 센서를 통해서 스파크 작업 완료 여부 확인 
-    task_id = "watch_spark"
+    task_id = "watch_spark",
+    job_flow_id = "{{ task_instance.xcom_pull(task_ids='create_cluster', key='return_value') }}",
+    # 스파크 작업 완료 여부 체크 
+    step_id = "{{ task_instance.xcom_pull(task_ids='run_spark', key='return_value')[0] }}",
+    aws_conn_id = "aws_default"
   )
   terminate_cluster_task = EmrTerminateJobFlowOperator( # EMR 클러스터 해제
-    task_id = "terminate_cluster"
+    task_id = "terminate_cluster",
+    job_flow_id = "{{ task_instance.xcom_pull(task_ids='create_cluster', key='return_value') }}",
+    aws_conn_id = "aws_default"
+    trigger_rule = "all_done" # 위의 task 실패하더라도, 반드시 emr 삭제한다 
+
   )
 
   # 7. 의존성 
