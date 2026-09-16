@@ -14,8 +14,8 @@ else:
 
 # 3. 버킷 정보
 BUCKET_NAME = 'de-ai-25-loggen-s3-bk-827913617635'
-INPUT_PATH  = f"s3://{BUCKET_NAME}/raw_data.json" # 나중에 필요시 dt={TARGET_DATE} 식으로 파티션 처리 가능함
-OUTPUT_PATH = f"s3://{BUCKET_NAME}/processed/"    # 나중에 필요시 ~/processed/dt={TARGET_DATE}/
+INPUT_PATH  = f"s3://{BUCKET_NAME}/spark/bronze/raw_data.json" # 나중에 필요시 dt={TARGET_DATE} 식으로 파티션 처리 가능함
+OUTPUT_PATH = f"s3://{BUCKET_NAME}/spark/silver/"    # 나중에 필요시 ~/processed/dt={TARGET_DATE}/
 
 # 4. 스파크를 통한 ETL 처리 함수 -> 브론즈 =>(정제, 처리시간기록)=> 실버
 def clean_processing():
