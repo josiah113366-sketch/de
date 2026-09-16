@@ -10,8 +10,11 @@ from airflow.providers.amazon.aws.sensors.emr import EmrStepSensor
 # 2. 환경 변수
 
 # 3. 인프라 설정 dict
+JOB_FLOW_OVERRIDES = {} 
 
 # 4. 콜백 함수 
+def _dummy_task_cb():
+    print("클러스터 생성 완료")
 
 # 5. dag 정의 
 with DAG(  
@@ -29,11 +32,27 @@ with DAG(
 ) as dag: 
 
   # 6. task 구성 
-  create_cluster_task = EmrCreateJobFlowOperator()
-  dummy_task = PythonOperator()
-  run_spark_task = EmrAddStepsOperator()
-  watch_spark_task = EmrStepSensor()   
-  terminate_cluster_task = EmrTerminateJobFlowOperator()
+  create_cluster_task    = EmrCreateJobFlowOperator( # EMR 클러스터 생성 (스파크 구동하기 위한 인프라 구성)
+    task_id = "create_cluster", 
+    # 인프라 구성 dict로 표현 == 테라폼의 resource "aws_emr_cluster" {}
+    job_flow_overrides = JOB_FLOW_OVERRIDES,
+    # aws 연결 정보 
+    aws_conn_id = "aws_default"
+    # 인프라 구성 후 클러스터를 참조할 수 있는 리소스 id를 자동 반환
+  )
+  dummy_task             = PythonOperator( # 더미 작업, 인프라 구성 완료됨을 확인, 생략 가능함 
+    task_id = "dummy",
+    python_callable = _dummy_task_cb 
+  )
+  run_spark_task         = EmrAddStepsOperator( # 스파크 코드 작동 ETL 처리 
+    task_id = "run_spark"
+  )
+  watch_spark_task       = EmrStepSensor( # 센서를 통해서 스파크 작업 완료 여부 확인 
+    task_id = "watch_spark"
+  )
+  terminate_cluster_task = EmrTerminateJobFlowOperator( # EMR 클러스터 해제
+    task_id = "terminate_cluster"
+  )
 
   # 7. 의존성 
   create_cluster_task >> dummy_task >> run_spark_task >> watch_spark_task >> terminate_cluster_task
