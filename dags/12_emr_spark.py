@@ -2,6 +2,10 @@
 from datetime import timedelta
 import pendulum
 from airflow import DAG
+# 오퍼레이터 
+from airflow.operators.python import PythonOperator
+from airflow.providers.amazon.aws.operators.emr import EmrCreateJobFlowOperator, EmrAddStepsOperator, EmrTerminateJobFlowOperator
+from airflow.providers.amazon.aws.sensors.emr import EmrStepSensor
 
 # 2. 환경 변수
 
