@@ -8,11 +8,14 @@ from airflow.providers.amazon.aws.operators.emr import EmrCreateJobFlowOperator,
 from airflow.providers.amazon.aws.sensors.emr import EmrStepSensor
 
 # 2. 환경 변수
+BUCKET_NAME = 'de-ai-25-loggen-s3-bk-827913617635'
+SPARK_SCRIPT_PATH = f"s3://{BUCKET_NAME}/spark/scripts/spark_etl.py" 
+EMR_LOG_URI = f"s3://{BUCKET_NAME}/spark/emr_logs/" 
 
 # 3. 인프라 설정 dict
 JOB_FLOW_OVERRIDES = {} 
 SPARK_SUBMITS = [
-   {}
+  {}
 ]
 
 # 4. 콜백 함수 
