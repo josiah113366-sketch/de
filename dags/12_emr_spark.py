@@ -29,6 +29,12 @@ with DAG(
 ) as dag: 
 
   # 6. task 구성 
+  create_cluster_task = EmrCreateJobFlowOperator()
+  dummy_task = PythonOperator()
+  run_spark_task = EmrAddStepsOperator()
+  watch_spark_task = EmrStepSensor()   
+  terminate_cluster_task = EmrTerminateJobFlowOperator()
 
   # 7. 의존성 
+  create_cluster_task >> dummy_task >> run_spark_task >> watch_spark_task >> terminate_cluster_task
   pass
