@@ -40,6 +40,7 @@ def generator_dummy_data_with_noise():
         dummy_data.append( record )
 
     return dummy_data
+
 # 4. 함수 호출
 if __name__ == '__main__':
     data = generator_dummy_data_with_noise()
